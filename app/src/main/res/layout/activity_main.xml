@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:text="Welcome to our app"
         android:textColor="@color/ewgreen"
+        android:textStyle="bold"
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
