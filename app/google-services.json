@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "354237762739",
+    "project_id": "envirowealth-8e810",
+    "storage_bucket": "envirowealth-8e810.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354237762739:android:470716b9572271bed534c6",
+        "android_client_info": {
+          "package_name": "com.example.envirowealth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD7vNzrOqBkA958QzMB1ylFfXVZ39jj9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

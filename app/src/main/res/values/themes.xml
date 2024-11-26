@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.EnviroWealth" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/ewgreen</item>
+        <item name="colorPrimaryContainer">@color/ewgreen</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryContainer">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:windowLightStatusBar">true</item> <!-- Ensures status bar icons are visible on light background -->
+
+        <!-- Navigation bar color -->
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
+        <item name="android:windowLightNavigationBar">true</item> <!-- Ensures nav bar icons are visible on light background -->
+
+        <!-- Customize additional theme attributes here -->
+    </style>
+
+    <style name="Theme.EnviroWealth" parent="Base.Theme.EnviroWealth" />
+</resources>
