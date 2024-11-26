@@ -46,6 +46,7 @@
                     android:hint="Password"
                     android:drawableLeft="@drawable/baseline_lock_24"
                     android:drawablePadding="8dp"
+                    android:inputType="textPassword"
                     android:textColor="@color/grey"/>
 
 
@@ -57,6 +58,7 @@
                     android:id="@+id/login_button"
                     android:textSize="18sp"
                     app:cornerRadius = "30dp"/>
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -73,7 +75,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/signupRedirectText"
-                    android:text="Not yet registered? Signup"
+                    android:text="Not yet registered? Sign-up"
+                    android:clickable="true"
                     android:layout_gravity="center"
                     android:padding="8dp"
                     android:layout_marginTop="14dp"
