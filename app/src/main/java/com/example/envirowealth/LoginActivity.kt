@@ -1,88 +1,40 @@
 package com.example.envirowealth
 
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
-import androidx.appcompat.app.AppCompatActivity
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Patterns
 import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import com.example.envirowealth.databinding.ActivityLoginBinding
-import com.google.firebase.auth.FirebaseAuth
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityLoginBinding
-    private lateinit var firebaseAuth: FirebaseAuth
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_login)
 
-        firebaseAuth = FirebaseAuth.getInstance()
+        // Login Button logic
+        val loginButton = findViewById<Button>(R.id.login_button)
+        loginButton.setOnClickListener {
+            // Perform login logic (e.g., validate credentials)
 
-        binding.loginButton.setOnClickListener {
-            val email = binding.loginEmail.text.toString()
-            val password = binding.loginPassword.text.toString()
+            // Save login state in SharedPreferences
+            val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+            val editor: SharedPreferences.Editor = sharedPreferences.edit()
+            editor.putBoolean("isLoggedIn", true)
+            editor.apply()
 
-            if (email.isNotEmpty() && password.isNotEmpty()){
-
-                firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener{
-                    if (it.isSuccessful){
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } else {
-                Toast.makeText(this, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
-            }
+            // Navigate to MainActivity
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
-        binding.forgotPassword.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            val view = layoutInflater.inflate(R.layout.dialog_forgot, null)
-            val userEmail = view.findViewById<EditText>(R.id.editBox)
-
-            builder.setView(view)
-            val dialog = builder.create()
-
-            view.findViewById<Button>(R.id.btnReset).setOnClickListener {
-                compareEmail(userEmail)
-                dialog.dismiss()
-            }
-            view.findViewById<Button>(R.id.btnCancel).setOnClickListener {
-                dialog.dismiss()
-            }
-            if (dialog.window != null){
-                dialog.window!!.setBackgroundDrawable(ColorDrawable(0))
-            }
-            dialog.show()
+        // Navigate to SignupActivity when clicking on the text
+        val signupLink = findViewById<TextView>(R.id.signupRedirectText)
+        signupLink.setOnClickListener {
+            val intent = Intent(this, SignupActivity::class.java)
+            startActivity(intent)
         }
-
-        binding.signupRedirectText.setOnClickListener {
-            val signupIntent = Intent(this, SignupActivity::class.java)
-            startActivity(signupIntent)
-        }
-    }
-
-    //Outside onCreate
-    private fun compareEmail(email: EditText){
-        if (email.text.toString().isEmpty()){
-            return
-        }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email.text.toString()).matches()){
-            return
-        }
-        firebaseAuth.sendPasswordResetEmail(email.text.toString())
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(this, "Check your email", Toast.LENGTH_SHORT).show()
-                }
-            }
     }
 }
