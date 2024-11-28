@@ -1,0 +1,37 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Other menu items -->
+    <item
+        android:id="@+id/nav_home"
+        android:title="Home"
+        android:icon="@drawable/nav_home" />
+
+    <item
+        android:id="@+id/nav_settings"
+        android:title="Settings"
+        android:icon="@drawable/nav_settings" />
+
+    <item
+        android:id="@+id/nav_share"
+        android:title="Share"
+        android:icon="@drawable/nav_share" />
+
+    <item
+        android:id="@+id/nav_about"
+        android:title="About"
+        android:icon="@drawable/nav_about" />
+
+    <!-- Exit Menu Option -->
+    <item
+        android:id="@+id/nav_exit"
+        android:title="Exit"
+        android:icon="@drawable/nav_exit" />
+
+    <!-- Logout Menu Option -->
+    <item
+        android:id="@+id/action_logout"
+        android:title="Logout"
+        android:icon="@drawable/nav_logout"
+        app:showAsAction="never" />
+</menu>
