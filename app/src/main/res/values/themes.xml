@@ -18,14 +18,18 @@
 
         <!-- Status bar color -->
         <item name="android:statusBarColor">?attr/colorPrimary</item>
-        <item name="android:windowLightStatusBar">true</item> <!-- Ensures status bar icons are visible on light background -->
+        <item name="android:windowLightStatusBar">true</item>
 
         <!-- Navigation bar color -->
         <item name="android:navigationBarColor">?attr/colorPrimary</item>
-        <item name="android:windowLightNavigationBar">true</item> <!-- Ensures nav bar icons are visible on light background -->
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
 
         <!-- Customize additional theme attributes here -->
     </style>
 
     <style name="Theme.EnviroWealth" parent="Base.Theme.EnviroWealth" />
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your theme here -->
+    </style>
 </resources>

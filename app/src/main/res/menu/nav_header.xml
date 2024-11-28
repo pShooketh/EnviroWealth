@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="176dp"
+    android:background="@drawable/headerbkg"
     android:gravity="bottom"
     android:padding="16dp"
-    android:background="@drawable/headerbkg"
+    android:orientation="vertical"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <!-- Profile Image -->
-    <ImageView
-        android:id="@+id/nav_header_image"
+    <androidx.cardview.widget.CardView
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:src="@drawable/aklogo"
-        android:contentDescription="@string/nav_header_image_desc"
+        app:cardCornerRadius="36dp"
+        app:cardBackgroundColor="@color/white"
         android:layout_gravity="center_horizontal"
-        android:scaleType="centerCrop"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/navImage"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/aklogo"
+            android:contentDescription="@string/nav_header_image_desc"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+            app:strokeColor="@color/white"
+            app:strokeWidth="2dp"
+            android:background="@drawable/circular_background" />
+    </androidx.cardview.widget.CardView>
 
     <!-- Header Title -->
     <TextView
-        android:id="@+id/nav_header_title"
+        android:id="@+id/navName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
@@ -33,13 +44,12 @@
 
     <!-- Header Subtitle -->
     <TextView
-        android:id="@+id/nav_header_subtitle"
+        android:id="@+id/navEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="contact@androidknowledge.com"
+        android:text="contact@envirowealth.com"
         android:textColor="@color/white"
         android:textSize="14sp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp" />
-
 </LinearLayout>
