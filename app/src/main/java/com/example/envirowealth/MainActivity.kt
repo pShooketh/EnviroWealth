@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -77,16 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_logout -> {
-                // Perform logout logic here
-                val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
-                val editor: SharedPreferences.Editor = sharedPreferences.edit()
-                editor.putBoolean("isLoggedIn", false)
-                editor.apply()
-
-                // Navigate to LoginActivity
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish()
+                handleLogout()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -123,11 +113,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 // Exit the app
                 finish()
             }
+            R.id.action_logout -> {
+                handleLogout()
+            }
         }
 
         // Close the navigation drawer after item selection
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
-}
 
+    private fun handleLogout() {
+        // Perform logout logic
+        val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putBoolean("isLoggedIn", false)
+        editor.apply()
+
+        // Navigate to LoginActivity
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+}
