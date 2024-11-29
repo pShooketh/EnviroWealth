@@ -23,7 +23,7 @@
             android:text="Forgot Password"
             android:textColor="@color/black"
             android:textSize="17sp"
-            android:drawableLeft="@drawable/baseline_block_reset_24"
+            android:drawableLeft="@drawable/baseline_block_24"
             android:drawablePadding="8dp"
             app:layout_constraintTop_toTopOf="parent"/>
 

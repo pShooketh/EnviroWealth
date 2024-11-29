@@ -13,6 +13,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -40,12 +41,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // Default fragment
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, HomeFragment())
-                .commit()
-            navigationView.setCheckedItem(R.id.nav_home)
+        // Initialize BottomNavigationView
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+
+        // Set default fragment for Bottom Navigation
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, HomeFragment())
+            .commit()
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, HomeFragment())
+                        .commit()
+                }
+                R.id.nav_qr -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, QRScannerFragment())
+                        .commit()
+                }
+                R.id.nav_back -> {
+                    // Using OnBackPressedDispatcher for back navigation
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+            true
         }
 
         // Handle edge-to-edge window insets
@@ -68,7 +89,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // Inflate the menu options
         menuInflater.inflate(R.menu.nav_menu, menu)
         return true
     }
@@ -86,51 +106,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_home -> {
-                // Navigate to Home Fragment
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, HomeFragment())
                     .commit()
             }
             R.id.nav_settings -> {
-                // Navigate to Settings Fragment
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, SettingsFragment())
                     .commit()
             }
             R.id.nav_share -> {
-                // Navigate to Share Fragment
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, ShareFragment())
                     .commit()
             }
             R.id.nav_about -> {
-                // Navigate to About Fragment
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, AboutFragment())
                     .commit()
             }
             R.id.nav_exit -> {
-                // Exit the app
                 finish()
             }
             R.id.action_logout -> {
                 handleLogout()
             }
         }
-
-        // Close the navigation drawer after item selection
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
     private fun handleLogout() {
-        // Perform logout logic
         val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", false)
         editor.apply()
 
-        // Navigate to LoginActivity
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
