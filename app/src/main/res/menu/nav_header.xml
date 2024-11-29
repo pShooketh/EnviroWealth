@@ -28,7 +28,7 @@
             app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
             app:strokeColor="@color/white"
             app:strokeWidth="2dp"
-            android:background="@drawable/circular_background" />
+            android:background="@drawable/circular_background"/>
     </androidx.cardview.widget.CardView>
 
     <!-- Header Title -->
