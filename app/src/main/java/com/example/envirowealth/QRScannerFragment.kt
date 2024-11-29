@@ -7,7 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.camera.core.Preview
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -44,20 +45,27 @@ class QRScannerFragment : Fragment() {
         cameraProviderFuture.addListener({
             cameraProvider = cameraProviderFuture.get()
 
-            // Set up the Preview
-            val preview = Preview.Builder().build().also {
+            val preview = androidx.camera.core.Preview.Builder().build().also {
                 it.setSurfaceProvider(previewView.surfaceProvider)
             }
 
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+                .also {
+                    it.setAnalyzer(ContextCompat.getMainExecutor(requireContext()), { image ->
+                        analyzeImage(image)
+                    })
+                }
+
             try {
-                // Bind camera and analysis use case
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     viewLifecycleOwner,
                     androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA,
-                    preview
+                    preview,
+                    imageAnalyzer
                 )
-                setupBarcodeAnalysis()
             } catch (exc: Exception) {
                 Log.e("QRScannerFragment", "Camera initialization failed", exc)
             }
@@ -65,41 +73,30 @@ class QRScannerFragment : Fragment() {
     }
 
     @SuppressLint("UnsafeOptInUsageError")
-    private fun setupBarcodeAnalysis() {
-        // Continuously analyze the camera feed for QR codes
-        previewView.setOnTouchListener { view, motionEvent ->
-            // Perform click for accessibility compliance
-            if (motionEvent.action == android.view.MotionEvent.ACTION_UP) {
-                view.performClick()
-            }
-            // Add logic here if you want to handle touch events
-            false
-        }
-
-        // Process frames with ML Kit
-        processImage()
-    }
-
-    private fun processImage() {
-        // Safely retrieve the bitmap from the PreviewView
-        val bitmap = previewView.bitmap
-
-        if (bitmap != null) {
-            // Create an InputImage using the non-null bitmap
-            val image = InputImage.fromBitmap(bitmap, 0)
-
-            // Pass the image to ML Kit for barcode detection
-            barcodeScanner.process(image)
-                .addOnSuccessListener { barcodes ->
-                    for (barcode in barcodes) {
-                        handleQRCode(barcode)
+    private fun analyzeImage(imageProxy: ImageProxy) {
+        try {
+            val mediaImage = imageProxy.image
+            if (mediaImage != null) {
+                val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                barcodeScanner.process(image)
+                    .addOnSuccessListener { barcodes ->
+                        for (barcode in barcodes) {
+                            handleQRCode(barcode)
+                        }
                     }
-                }
-                .addOnFailureListener { e ->
-                    Log.e("QRScannerFragment", "QR Code detection failed", e)
-                }
-        } else {
-            Log.e("QRScannerFragment", "Failed to retrieve bitmap from PreviewView")
+                    .addOnFailureListener { e ->
+                        Log.e("QRScannerFragment", "QR Code detection failed", e)
+                    }
+                    .addOnCompleteListener {
+                        imageProxy.close()
+                    }
+            } else {
+                Log.e("QRScannerFragment", "No media image available for analysis.")
+                imageProxy.close()
+            }
+        } catch (e: Exception) {
+            Log.e("QRScannerFragment", "Error analyzing image", e)
+            imageProxy.close()
         }
     }
 
@@ -107,6 +104,7 @@ class QRScannerFragment : Fragment() {
         val rawValue = barcode.rawValue
         rawValue?.let {
             Toast.makeText(requireContext(), "QR Code Detected: $it", Toast.LENGTH_SHORT).show()
+            Log.d("QRScannerFragment", "QR Code Value: $it")
         }
     }
 
