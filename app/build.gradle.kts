@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -50,10 +51,18 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.auth)
+
+    // CameraX dependencies
+    implementation("androidx.camera:camera-core:1.5.0-alpha03")
+    implementation("androidx.camera:camera-view:1.5.0-alpha03")
+    implementation("androidx.camera:camera-lifecycle:1.5.0-alpha03")
+    implementation("androidx.camera:camera-camera2:1.5.0-alpha03") // Required Camera2 implementation
+
+    // ML Kit Barcode Scanning
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+
+    // Testing dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    }
-
-
+}
