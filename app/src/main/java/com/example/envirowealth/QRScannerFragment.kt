@@ -6,7 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView // Add this import
+import android.widget.TextView
 import android.widget.Toast
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -19,12 +19,11 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 
-
 class QRScannerFragment : Fragment() {
 
     private lateinit var previewView: PreviewView
-    private lateinit var pointsTextView: TextView // Reference to the points TextView
-    private var cameraProvider: ProcessCameraProvider? = null // Make cameraProvider nullable
+    private lateinit var pointsTextView: TextView
+    private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var barcodeScanner: BarcodeScanner
 
     override fun onCreateView(
@@ -47,39 +46,44 @@ class QRScannerFragment : Fragment() {
     }
 
     private fun startCamera() {
-        // Check if fragment is still attached to the activity
-        if (!isAdded) return
+        // Check if fragment is still attached to the activity and context is not null
+        if (!isAdded || context == null) {
+            Log.e("QRScannerFragment", "Fragment not attached to context. Aborting camera start.")
+            return
+        }
 
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
+            if (!isAdded || context == null) {
+                Log.e("QRScannerFragment", "Fragment not attached to context. Aborting camera setup.")
+                return@addListener
+            }
+
             cameraProvider = cameraProviderFuture.get()
 
-            // Ensure that we can access the context and lifecycle
-            if (isAdded) {
-                val preview = androidx.camera.core.Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
+            val preview = androidx.camera.core.Preview.Builder().build().also {
+                it.setSurfaceProvider(previewView.surfaceProvider)
+            }
+
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+                .also {
+                    it.setAnalyzer(ContextCompat.getMainExecutor(requireContext()), ImageAnalysis.Analyzer { image ->
+                        analyzeImage(image)
+                    })
                 }
 
-                val imageAnalyzer = ImageAnalysis.Builder()
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build()
-                    .also {
-                        it.setAnalyzer(ContextCompat.getMainExecutor(requireContext()), ImageAnalysis.Analyzer { image ->
-                            analyzeImage(image)
-                        })
-                    }
-
-                try {
-                    cameraProvider?.unbindAll() // Null check to avoid issues if cameraProvider is null
-                    cameraProvider?.bindToLifecycle(
-                        viewLifecycleOwner,
-                        androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA,
-                        preview,
-                        imageAnalyzer
-                    )
-                } catch (exc: Exception) {
-                    Log.e("QRScannerFragment", "Camera initialization failed", exc)
-                }
+            try {
+                cameraProvider?.unbindAll() // Null check to avoid issues if cameraProvider is null
+                cameraProvider?.bindToLifecycle(
+                    viewLifecycleOwner,
+                    androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA,
+                    preview,
+                    imageAnalyzer
+                )
+            } catch (exc: Exception) {
+                Log.e("QRScannerFragment", "Camera initialization failed", exc)
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
@@ -123,7 +127,7 @@ class QRScannerFragment : Fragment() {
             val pointsToAdd = 10
             PointsManager.addPoints(requireContext(), pointsToAdd)
 
-            // Update the points display
+            // Update the points display immediately after adding points
             updatePointsDisplay()
         }
     }
@@ -141,11 +145,9 @@ class QRScannerFragment : Fragment() {
         super.onDestroyView()
         // Only unbind the camera and close the barcode scanner if the fragment is attached
         if (isAdded) {
-            cameraProvider?.unbindAll() // Null check for cameraProvider
-            barcodeScanner.close() // Close barcode scanner safely
+            cameraProvider?.unbindAll()
+            barcodeScanner.close()
         }
     }
 }
-
-
 
