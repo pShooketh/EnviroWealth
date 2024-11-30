@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView // Add this import
 import android.widget.Toast
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -18,10 +19,12 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 
+
 class QRScannerFragment : Fragment() {
 
     private lateinit var previewView: PreviewView
-    private lateinit var cameraProvider: ProcessCameraProvider
+    private lateinit var pointsTextView: TextView // Reference to the points TextView
+    private var cameraProvider: ProcessCameraProvider? = null // Make cameraProvider nullable
     private lateinit var barcodeScanner: BarcodeScanner
 
     override fun onCreateView(
@@ -30,44 +33,53 @@ class QRScannerFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_q_r_scanner, container, false)
         previewView = view.findViewById(R.id.preview_view)
+        pointsTextView = view.findViewById(R.id.pointsTextView) // Initialize points TextView
 
         // Initialize Barcode Scanner
         barcodeScanner = BarcodeScanning.getClient()
 
-        // Start the camera
-        startCamera()
+        // Start the camera only if the fragment is attached
+        if (isAdded) {
+            startCamera()
+        }
 
         return view
     }
 
     private fun startCamera() {
+        // Check if fragment is still attached to the activity
+        if (!isAdded) return
+
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
             cameraProvider = cameraProviderFuture.get()
 
-            val preview = androidx.camera.core.Preview.Builder().build().also {
-                it.setSurfaceProvider(previewView.surfaceProvider)
-            }
-
-            val imageAnalyzer = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-                .also {
-                    it.setAnalyzer(ContextCompat.getMainExecutor(requireContext()), { image ->
-                        analyzeImage(image)
-                    })
+            // Ensure that we can access the context and lifecycle
+            if (isAdded) {
+                val preview = androidx.camera.core.Preview.Builder().build().also {
+                    it.setSurfaceProvider(previewView.surfaceProvider)
                 }
 
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    viewLifecycleOwner,
-                    androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA,
-                    preview,
-                    imageAnalyzer
-                )
-            } catch (exc: Exception) {
-                Log.e("QRScannerFragment", "Camera initialization failed", exc)
+                val imageAnalyzer = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+                    .also {
+                        it.setAnalyzer(ContextCompat.getMainExecutor(requireContext()), ImageAnalysis.Analyzer { image ->
+                            analyzeImage(image)
+                        })
+                    }
+
+                try {
+                    cameraProvider?.unbindAll() // Null check to avoid issues if cameraProvider is null
+                    cameraProvider?.bindToLifecycle(
+                        viewLifecycleOwner,
+                        androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA,
+                        preview,
+                        imageAnalyzer
+                    )
+                } catch (exc: Exception) {
+                    Log.e("QRScannerFragment", "Camera initialization failed", exc)
+                }
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
@@ -103,14 +115,37 @@ class QRScannerFragment : Fragment() {
     private fun handleQRCode(barcode: Barcode) {
         val rawValue = barcode.rawValue
         rawValue?.let {
+            // Display QR Code value in a Toast message
             Toast.makeText(requireContext(), "QR Code Detected: $it", Toast.LENGTH_SHORT).show()
             Log.d("QRScannerFragment", "QR Code Value: $it")
+
+            // Add points (10 points per scan for now)
+            val pointsToAdd = 10
+            PointsManager.addPoints(requireContext(), pointsToAdd)
+
+            // Update the points display
+            updatePointsDisplay()
         }
+    }
+
+    private fun updatePointsDisplay() {
+        // Get the current points from PointsManager
+        val currentPoints = PointsManager.getPoints(requireContext())
+
+        // Update the TextView to show the current points
+        pointsTextView.text = "Points: $currentPoints"
+        Log.d("QRScannerFragment", "Current Points: $currentPoints")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        cameraProvider.unbindAll()
-        barcodeScanner.close()
+        // Only unbind the camera and close the barcode scanner if the fragment is attached
+        if (isAdded) {
+            cameraProvider?.unbindAll() // Null check for cameraProvider
+            barcodeScanner.close() // Close barcode scanner safely
+        }
     }
 }
+
+
+
