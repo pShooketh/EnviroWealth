@@ -22,3 +22,5 @@ object PointsManager {
         prefs.edit().putInt(KEY_POINTS, newPoints).apply()
     }
 }
+
+
