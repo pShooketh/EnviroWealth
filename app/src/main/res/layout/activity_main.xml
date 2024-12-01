@@ -10,6 +10,8 @@
     tools:openDrawer="start"
     tools:context=".MainActivity">
 
+
+
     <!-- Main Content Layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -37,6 +39,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/bottom_navigation" />
 
+
         <!-- Bottom Navigation View -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
@@ -48,7 +51,9 @@
             app:itemIconTint="@color/ewgreen"
             app:itemTextColor="@color/ewgreen"
             app:layout_constraintBottom_toBottomOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <!-- Navigation View -->
     <com.google.android.material.navigation.NavigationView
@@ -59,4 +64,5 @@
         app:menu="@menu/nav_menu"
         app:itemIconTint="@color/ewgreen"
         app:itemTextColor="@color/ewgreen" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

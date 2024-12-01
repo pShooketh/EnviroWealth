@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 
 class HomeFragment : Fragment() {
 
     private lateinit var pointsTextView: TextView
+    private lateinit var rewardsButton: Button  // Declare the button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,6 +22,18 @@ class HomeFragment : Fragment() {
 
         // Find the TextView for points display
         pointsTextView = view.findViewById(R.id.pointsTextView)
+
+        // Find the Rewards Button
+        rewardsButton = view.findViewById(R.id.rewards_button)
+
+        // Set up button click listener to navigate to RewardsFragment
+        rewardsButton.setOnClickListener {
+            // Navigate to the RewardsFragment
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, RewardsFragment())
+            transaction.addToBackStack(null)  // Allows the user to navigate back
+            transaction.commit()
+        }
 
         // Update the points display
         updatePointsDisplay()

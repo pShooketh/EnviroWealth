@@ -15,34 +15,39 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import android.widget.Button
+import com.example.envirowealth.databinding.ActivityMainBinding // Import the view binding class
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private lateinit var binding: ActivityMainBinding // Declare the binding object
     private lateinit var drawerLayout: DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        // Initialize the binding object
+        binding = ActivityMainBinding.inflate(layoutInflater)  // Inflate the view binding layout
+        setContentView(binding.root)  // Set the root view of the layout
 
         // Set up the toolbar
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
 
         // Initialize drawer and navigation view
-        drawerLayout = findViewById(R.id.drawer_layout)
-        val navigationView: NavigationView = findViewById(R.id.nav_view)
+        drawerLayout = binding.drawerLayout
+        val navigationView: NavigationView = binding.navView
         navigationView.setNavigationItemSelectedListener(this)
 
         // Set up the navigation drawer toggle
         val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolbar,
+            this, drawerLayout, binding.toolbar,
             R.string.open_nav, R.string.close_nav
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
         // Initialize BottomNavigationView
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+        val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
 
         // Set default fragment for Bottom Navigation
         supportFragmentManager.beginTransaction()
@@ -62,7 +67,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         .commit()
                 }
                 R.id.nav_back -> {
-                    // Using OnBackPressedDispatcher for back navigation
                     onBackPressedDispatcher.onBackPressed()
                 }
             }
