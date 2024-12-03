@@ -59,7 +59,7 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.5.0-alpha03") // Required Camera2 implementation
 
     // ML Kit Barcode Scanning
-    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
 
     // Testing dependencies
     testImplementation(libs.junit)
